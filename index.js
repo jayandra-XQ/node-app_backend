@@ -22,52 +22,66 @@ app.use(express.json()); //in-built  middleware
 app.use(morgan('default'));
 app.use(express.static('public'));
 
-// MiddleWare - Middleware functions are functions that have access to the request object (req), the response object (res), and the next function in the application’s request-response cycle
-// app.use((req, res, next ) => {
-//     console.log( req.method, req.ip, new Date, req.hostname, req.get('User-Agent'))  // Server log
-//     next()
-// })
 
 
-// authorization
 
-const auth = (req,res,next) => {
-    // console.log(req.query)
-    // if (req.body.password == '123') {
-        
-    //     next();
-    // } else {
-    //     res.sendStatus(401);
-    // }
-
-    next();
-}
-
-app.use(auth);
 
 
 // API - ENDPOINT - ROUTE
 
-app.get('/product/:id',auth, (req,res) => {
-    console.log(req.params)
-    res.json({type: 'GET'})
+//products
+// API ROUTE, BASE URL, examples - google.com/api/v2/
+
+
+// CREATE POST /products                    C R U D
+app.post('/products', (req,res) => {
+    console.log(req.body);
+    products.push(req.body)
+    res.sendStatus(201).json(req.body)
 });
 
-app.post('/',auth, (req,res) => {
-    res.json({type: 'POST'})
+// READ - GET /products
+app.get('/products',(req,res) => {
+    res.json(products);
 });
 
-app.put('/', (req,res) => {
-    res.json({type: 'PUT'})
+// READ GET /products/:id
+app.get('/products/:id', (req,res) => {
+    const id = +req.params.id;
+    const product = products.find(p => p.id === id)
+    res.json(product);
+})
+
+
+
+//UPDATE PUT /products/:id
+app.put('/products/:id', (req,res) => {
+    const id = +req.params.id;
+    const productIndex = products.findIndex(p => p.id === id)
+    products.splice(productIndex,1,{...req.body, id:id})
+    res.sendStatus(201).json();
 });
 
-app.delete('/',(req,res) => {
-    res.json({type: 'DELETE'})
+//UPDATE PATCH /products/:id
+
+app.patch('/products/:id', (req,res) => {
+    const id = +req.params.id;
+    const productIndex = products.findIndex(p => p.id === id)
+    const product = products[productIndex]
+    products.splice(productIndex,1,{...product, ...req.body})
+    res.sendStatus(201).json();
 });
 
-app.patch('/', (req,res) => {
-    res.json({type: 'PATCH'})
+
+//DELETE delete /products/:id
+
+app.delete('/products/:id', (req,res) => {
+    const id = +req.params.id;
+    const productIndex = products.findIndex(p => p.id === id)
+    const product = products.splice(productIndex, 1)
+    res.sendStatus(201).json(product);
 });
+
 
 
 
