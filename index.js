@@ -1,10 +1,13 @@
 
 // creating server using express
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const morgan = require('morgan');  // third party middleware
 const productRouter = require('./routes/product')
 const userRouter = require('./routes/user')
+
+console.log('env',process.env.DB_PASSWORD);
 
 
 
@@ -18,7 +21,7 @@ app.use(express.json()); //in-built  middleware
 
 //for logger - 'dev' - 'default'
 app.use(morgan('default'));
-app.use(express.static('public'));
+app.use(express.static(process.env.PUBLIC_DIR));
 app.use('/', productRouter);
 app.use('/users', userRouter);
 
@@ -40,7 +43,9 @@ app.get('/demo', (req,res) => {
 
 
 
-app.listen(8000, () => {
+
+
+app.listen(process.env.PORT, () => {
     console.log('server started');
 });
 
